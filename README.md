@@ -335,3 +335,113 @@ The app automatically detects and uses GPU if available.
   - 0.7-0.8: Moderate changes (default: 0.75)
   - 0.8-1.0: Dramatic transformations
 - Try both SDXS and Small SD V0 refiners for different results
+
+
+## Troubleshooting
+
+### Backend Issues
+
+**Problem: `ModuleNotFoundError` or `ImportError`**
+```bash
+# Make sure virtual environment is activated
+source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate     # Windows
+
+# Reinstall dependencies
+pip install -r requirements.txt
+```
+
+**Problem: PyTorch not detecting GPU**
+```bash
+# Check CUDA availability
+python -c "import torch; print(torch.cuda.is_available())"
+
+# If False, install CUDA-compatible PyTorch
+# Visit: https://pytorch.org/get-started/locally/
+```
+
+**Problem: Out of memory errors**
+- Models require significant RAM/VRAM
+- SD-XS: ~4-6GB RAM (CPU) or ~2-4GB VRAM (GPU)
+- Small SD V0: ~3-5GB RAM (CPU) or ~2-3GB VRAM (GPU)
+- Close other applications or use smaller batch sizes
+
+**Problem: Model download fails**
+```bash
+# Check your internet connection
+# HuggingFace downloads can be large (1-2GB)
+# Try again or manually download from HuggingFace
+```
+
+### Frontend Issues
+
+**Problem: `CORS` errors in browser console**
+- Check that backend `.env` has correct CORS_ORIGINS
+- Verify backend is running on port 8001
+- Check frontend `.env` has correct REACT_APP_BACKEND_URL
+
+**Problem: Frontend won't start**
+```bash
+# Clear node modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Or with yarn
+rm -rf node_modules yarn.lock
+yarn install
+```
+
+**Problem: Images not displaying**
+- Check browser console for errors
+- Verify image paths start with `/api/images/`
+- Check that backend is serving files correctly
+- Clear browser cache
+
+### General Issues
+
+**Problem: Slow generation/refinement**
+- This is normal on CPU (30-90 seconds)
+- Consider using a GPU for 10-20x speedup
+- Reduce steps parameter (minimum: 4 for generation, 10 for refinement)
+
+**Problem: Port already in use**
+```bash
+# Backend (port 8001)
+# Find and kill process
+lsof -ti:8001 | xargs kill -9  # macOS/Linux
+netstat -ano | findstr :8001   # Windows
+
+# Frontend (port 3000)
+lsof -ti:3000 | xargs kill -9  # macOS/Linux
+netstat -ano | findstr :3000   # Windows
+```
+
+## System Requirements
+
+### Minimum
+- **CPU**: 4+ cores
+- **RAM**: 8GB (CPU inference)
+- **Storage**: 10GB free space (for models)
+- **OS**: Windows 10+, macOS 10.15+, or Linux
+
+### Recommended
+- **CPU**: 8+ cores
+- **RAM**: 16GB
+- **GPU**: NVIDIA GPU with 6GB+ VRAM (CUDA compatible)
+- **Storage**: 20GB free space (for multiple models)
+- **OS**: Linux with NVIDIA drivers
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Acknowledgments
+
+- Built with [HuggingFace Diffusers](https://github.com/huggingface/diffusers)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Models from [HuggingFace Model Hub](https://huggingface.co/models)
+
