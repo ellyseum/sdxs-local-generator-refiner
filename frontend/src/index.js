@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
+import ErrorBoundary from "@/ErrorBoundary";
 import { Toaster } from "sonner";
 
 // Comprehensive ResizeObserver error suppression
@@ -36,7 +37,9 @@ window.addEventListener('unhandledrejection', (event) => {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
-    <Toaster position="top-center" richColors />
+    <ErrorBoundary>
+      <App />
+      <Toaster position="top-center" richColors />
+    </ErrorBoundary>
   </React.StrictMode>,
 );
