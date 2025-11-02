@@ -81,3 +81,7 @@ android-sdk/ backend/models/IDKiro_sdxs-512-0.9/.cache/huggingface/download/unet
 backend/models/IDKiro_sdxs-512-0.9/.cache/huggingface/download/text_encoder/xGOKKLRSlIhH692hSVvI1-gpoa8=.cce6febb0b6d876ee5eb24af35e27e764eb4f9b1d0b7c026c8c3333d4cfc916c.incomplete
 backend/models/IDKiro_sdxs-512-0.9/.cache/huggingface/download/text_encoder/Q1p2l2BzM1m6P5jKvr8WTq1TUio=.c3e254d7b61353497ea0be2c4013df4ea8f739ee88cffa0ba58cd085459ed565.incomplete
 backend/models/IDKiro_sdxs-512-0.9/.cache/huggingface/download/unet/4SfAgk9U607e8pVunEB9nSiU10k=.c2afb7dbea11b64d0bfbc4d1a45854aa65408b8a74a732438225d3f2ec85c71c.incomplete
+-e 
+# Environment files
+*.env
+*.env.*
