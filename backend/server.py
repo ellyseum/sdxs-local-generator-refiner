@@ -144,6 +144,83 @@ async def get_image(filename: str):
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(image_path)
 
+@api_router.get("/images/refined/{filename}")
+async def get_refined_image(filename: str):
+    image_path = REFINED_IMAGES_DIR / filename
+    if not image_path.exists():
+        raise HTTPException(status_code=404, detail="Refined image not found")
+    return FileResponse(image_path)
+
+@api_router.post("/refiner/prepare", response_model=RefinerPrepareResponse)
+async def prepare_refiner(request: RefinerPrepareRequest):
+    try:
+        logger.info(f"Preparing refiner model: {request.modelType}")
+        
+        if request.modelType == "sdxs":
+            # SDXS is already loaded, just link it to refiner
+            if not model_loader.is_loaded():
+                raise HTTPException(status_code=400, detail="SDXS model not loaded. Please load SDXS first.")
+            
+            refiner_service.set_sdxs_pipeline(model_loader.get_pipeline())
+            return RefinerPrepareResponse(
+                ok=True,
+                modelType="sdxs",
+                message="SDXS refiner ready (using existing model)"
+            )
+        
+        elif request.modelType == "small-sd-v0":
+            # Download and load Small SD V0
+            repo_id = hf_downloader.parse_repo_id(request.modelCardUrl)
+            model_path = await hf_downloader.download_model(repo_id)
+            await refiner_service.load_refiner_model("small-sd-v0", repo_id, model_path)
+            
+            return RefinerPrepareResponse(
+                ok=True,
+                modelType="small-sd-v0",
+                message=f"Small SD V0 refiner loaded successfully"
+            )
+        else:
+            raise HTTPException(status_code=400, detail=f"Unknown model type: {request.modelType}")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error preparing refiner: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/refiner/refine", response_model=RefineResponse)
+async def refine_image(request: RefineRequest):
+    try:
+        logger.info(f"Refining image with {request.modelType}: {request.originalImageFilename}")
+        
+        # Check if refiner is loaded
+        if not refiner_service.is_refiner_loaded(request.modelType):
+            raise HTTPException(status_code=400, detail=f"Refiner model {request.modelType} not loaded. Please prepare it first.")
+        
+        # Refine image
+        refined_path = await refiner_service.refine_image(
+            original_image_filename=request.originalImageFilename,
+            refinement_prompt=request.refinementPrompt,
+            model_type=request.modelType,
+            strength=request.strength,
+            steps=request.steps,
+            guidance=request.guidance,
+            seed=request.seed
+        )
+        
+        filename = Path(refined_path).name
+        
+        return RefineResponse(
+            ok=True,
+            refinedImagePath=f"/api/images/refined/{filename}",
+            filename=filename
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error refining image: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Include router
 app.include_router(api_router)
 
