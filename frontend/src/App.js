@@ -16,10 +16,20 @@ function App() {
   const [modelUrl, setModelUrl] = useState('https://huggingface.co/IDKiro/sdxs-512-0.9');
   const [prompt, setPrompt] = useState('');
   const [generatedImage, setGeneratedImage] = useState(null);
+  const [generatedImageFilename, setGeneratedImageFilename] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  
+  // Refiner states
+  const [selectedRefiner, setSelectedRefiner] = useState('sdxs');
+  const [refinerLoaded, setRefinerLoaded] = useState({ sdxs: false, 'small-sd-v0': false });
+  const [isLoadingRefiner, setIsLoadingRefiner] = useState(false);
+  const [refinementPrompt, setRefinementPrompt] = useState('');
+  const [isRefining, setIsRefining] = useState(false);
+  const [refinedImage, setRefinedImage] = useState(null);
+  const [refinerStatusMessage, setRefinerStatusMessage] = useState('');
 
   const handleFetchModel = async () => {
     if (!modelUrl.trim()) {
