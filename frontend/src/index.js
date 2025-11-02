@@ -4,8 +4,10 @@ import "@/index.css";
 import App from "@/App";
 import { Toaster } from "sonner";
 
-// Suppress ResizeObserver loop error (harmless warning from Select component)
-const resizeObserverLoopErrRe = /^ResizeObserver loop completed with undelivered notifications/;
+// Comprehensive ResizeObserver error suppression
+const resizeObserverLoopErrRe = /^ResizeObserver loop (completed with undelivered notifications|limit exceeded)/;
+
+// Suppress console errors
 const originalError = console.error;
 console.error = (...args) => {
   if (typeof args[0] === 'string' && resizeObserverLoopErrRe.test(args[0])) {
@@ -13,6 +15,23 @@ console.error = (...args) => {
   }
   originalError.call(console, ...args);
 };
+
+// Suppress window errors (prevents React error overlay)
+window.addEventListener('error', (event) => {
+  if (resizeObserverLoopErrRe.test(event.message)) {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+    return true;
+  }
+});
+
+// Suppress unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason && typeof event.reason.message === 'string' && resizeObserverLoopErrRe.test(event.reason.message)) {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+  }
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
