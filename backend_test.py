@@ -314,10 +314,14 @@ class SDXSAPITester:
         return success
 
 def main():
-    print("🚀 Starting SD-XS API Tests")
-    print("=" * 50)
+    print("🚀 Starting SD-XS API Tests with Refiner Functionality")
+    print("=" * 60)
     
     tester = SDXSAPITester()
+    
+    # Basic API Tests
+    print("\n📋 BASIC API TESTS")
+    print("-" * 30)
     
     # Test 1: Root endpoint
     tester.test_root_endpoint()
@@ -331,30 +335,98 @@ def main():
     # Test 4: Get non-existent image
     tester.test_get_nonexistent_image()
     
-    # Test 5: Valid model preparation (this takes time)
+    # Test 5: Get non-existent refined image
+    tester.test_get_nonexistent_refined_image()
+    
+    # Test 6: Refine without model (should fail)
+    tester.test_refine_without_model()
+    
+    # Test 7: Refine non-existent image (should fail)
+    tester.test_refine_nonexistent_image()
+    
+    # SD-XS Model Tests
+    print("\n🎨 SD-XS MODEL TESTS")
+    print("-" * 30)
+    
+    # Test 8: Valid model preparation (this takes time)
     model_success, model_response = tester.test_model_prepare_valid_url()
     
+    original_filename = None
     if model_success:
-        # Test 6: Generate image with loaded model
+        # Test 9: Generate image with loaded model
         gen_success, image_path = tester.test_generate_with_model()
         
         if gen_success and image_path:
-            # Test 7: Retrieve generated image
+            # Test 10: Retrieve generated image
             tester.test_get_image(image_path)
+            # Extract filename for refinement tests
+            original_filename = image_path.split('/')[-1]
     else:
         print("⚠️  Skipping image generation tests due to model loading failure")
         tester.log_test("Generate Image - With Model", False, "Skipped due to model loading failure")
         tester.log_test("Get Generated Image", False, "Skipped due to model loading failure")
     
+    # Refiner Tests
+    print("\n🔧 REFINER FUNCTIONALITY TESTS")
+    print("-" * 30)
+    
+    if original_filename:
+        # Test 11: SDXS Refiner preparation (should use existing model)
+        sdxs_refiner_success = tester.test_refiner_prepare_sdxs()
+        
+        if sdxs_refiner_success:
+            # Test 12: Refine image with SDXS
+            sdxs_refine_success, sdxs_refined_path = tester.test_refine_image_sdxs(original_filename)
+            
+            if sdxs_refine_success and sdxs_refined_path:
+                # Test 13: Retrieve SDXS refined image
+                tester.test_get_refined_image(sdxs_refined_path)
+        
+        # Test 14: Small SD V0 Refiner preparation (optional - may be slow)
+        print("\n⚠️  Small SD V0 tests are optional due to large download size")
+        user_input = input("Run Small SD V0 tests? (y/N): ").strip().lower()
+        
+        if user_input == 'y':
+            small_sd_refiner_success = tester.test_refiner_prepare_small_sd_v0()
+            
+            if small_sd_refiner_success:
+                # Test 15: Refine image with Small SD V0
+                small_sd_refine_success, small_sd_refined_path = tester.test_refine_image_small_sd_v0(original_filename)
+                
+                if small_sd_refine_success and small_sd_refined_path:
+                    # Test 16: Retrieve Small SD V0 refined image
+                    tester.test_get_refined_image(small_sd_refined_path)
+        else:
+            print("⏭️  Skipping Small SD V0 tests")
+            tester.log_test("Refiner Prepare - Small SD V0", False, "Skipped by user choice")
+            tester.log_test("Refine Image - Small SD V0", False, "Skipped by user choice")
+            tester.log_test("Get Refined Image - Small SD V0", False, "Skipped by user choice")
+    else:
+        print("⚠️  Skipping refiner tests due to no generated image")
+        tester.log_test("Refiner Prepare - SDXS", False, "Skipped due to no generated image")
+        tester.log_test("Refine Image - SDXS", False, "Skipped due to no generated image")
+        tester.log_test("Get Refined Image - SDXS", False, "Skipped due to no generated image")
+        tester.log_test("Refiner Prepare - Small SD V0", False, "Skipped due to no generated image")
+        tester.log_test("Refine Image - Small SD V0", False, "Skipped due to no generated image")
+        tester.log_test("Get Refined Image - Small SD V0", False, "Skipped due to no generated image")
+    
     # Print final results
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 60)
     print(f"📊 Test Results: {tester.tests_passed}/{tester.tests_run} passed")
     
+    # Print detailed results
+    print("\n📋 Detailed Results:")
+    for result in tester.test_results:
+        status = "✅" if result['success'] else "❌"
+        print(f"   {status} {result['test']}")
+        if not result['success'] and result['details']:
+            print(f"      └─ {result['details']}")
+    
     if tester.tests_passed == tester.tests_run:
-        print("🎉 All tests passed!")
+        print("\n🎉 All tests passed!")
         return 0
     else:
-        print("❌ Some tests failed")
+        print(f"\n❌ {tester.tests_run - tester.tests_passed} tests failed")
         return 1
 
 if __name__ == "__main__":
