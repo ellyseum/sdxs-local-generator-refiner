@@ -47,6 +47,7 @@ function App() {
 
       if (response.data.ok) {
         setModelLoaded(true);
+        setRefinerLoaded(prev => ({ ...prev, sdxs: true })); // SDXS refiner is auto-loaded
         setStatusMessage(`✓ ${response.data.message}`);
         toast.success('Model loaded successfully!');
       }
