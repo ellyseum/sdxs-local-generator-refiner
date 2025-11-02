@@ -279,6 +279,107 @@ function App() {
             </CardContent>
           </Card>
         )}
+
+        {generatedImage && (
+          <div className="refiner-section">
+            <Card className="control-card" data-testid="refiner-card">
+              <CardHeader>
+                <CardTitle>Image Refiner</CardTitle>
+                <CardDescription>Refine the generated image with a different model</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="refiner-model">Refiner Model</Label>
+                  <Select
+                    value={selectedRefiner}
+                    onValueChange={setSelectedRefiner}
+                    disabled={isLoadingRefiner || isRefining}
+                  >
+                    <SelectTrigger id="refiner-model" data-testid="refiner-select">
+                      <SelectValue placeholder="Select refiner model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sdxs">SDXS (Already Loaded)</SelectItem>
+                      <SelectItem value="small-sd-v0">Small Stable Diffusion V0</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {selectedRefiner !== 'sdxs' && !refinerLoaded[selectedRefiner] && (
+                  <Button
+                    data-testid="load-refiner-button"
+                    onClick={handleLoadRefiner}
+                    disabled={isLoadingRefiner}
+                    className="w-full"
+                  >
+                    {isLoadingRefiner ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading Refiner...
+                      </>
+                    ) : (
+                      'Fetch & Load Refiner Model'
+                    )}
+                  </Button>
+                )}
+
+                {(selectedRefiner === 'sdxs' || refinerLoaded[selectedRefiner]) && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="refinement-prompt">Refinement Prompt</Label>
+                      <Input
+                        id="refinement-prompt"
+                        data-testid="refinement-prompt-input"
+                        type="text"
+                        placeholder="Describe how to refine the image..."
+                        value={refinementPrompt}
+                        onChange={(e) => setRefinementPrompt(e.target.value)}
+                        disabled={isRefining}
+                      />
+                    </div>
+                    <Button
+                      data-testid="refine-button"
+                      onClick={handleRefine}
+                      disabled={isRefining}
+                      className="w-full"
+                    >
+                      {isRefining ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Refining...
+                        </>
+                      ) : (
+                        'Refine Image'
+                      )}
+                    </Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {refinerStatusMessage && (
+              <div className="status-message" data-testid="refiner-status-message">
+                {refinerStatusMessage}
+              </div>
+            )}
+
+            {refinedImage && (
+              <Card className="result-card" data-testid="refined-result-card">
+                <CardHeader>
+                  <CardTitle>Refined Image</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <img
+                    data-testid="refined-image"
+                    src={refinedImage}
+                    alt="Refined"
+                    className="generated-image"
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
