@@ -1,13 +1,15 @@
-# SD-XS Local Image Generator
+# SDXS Generator & Refiner
 
-A minimal web application for generating images locally using Stable Diffusion XS models from HuggingFace.
+A powerful web application for generating and refining images locally using Stable Diffusion XS models from HuggingFace.
 
 ## Features
 
 - 🚀 Download and load SD-XS models directly from HuggingFace
-- 🎨 Generate images locally using native TensorFlow/PyTorch
-- 💾 Save generated images to local storage
-- 🖥️ Clean, minimal web interface
+- 🎨 Generate images locally using PyTorch + Diffusers
+- ✨ **NEW:** Refine generated images with img2img pipelines
+- 🔄 **NEW:** Multiple refiner model options (SDXS, Small SD V0)
+- 💾 Save generated and refined images to local storage
+- 🖥️ Clean, intuitive web interface with conditional workflows
 - ⚡ Fast inference with optimized settings
 
 ## Tech Stack
