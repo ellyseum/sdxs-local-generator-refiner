@@ -164,8 +164,54 @@ Serves a refined image file.
 
 The app automatically detects and uses GPU if available.
 
+## Project Structure
+
+```
+/app/
+├── backend/
+│   ├── server.py                    # Main FastAPI application
+│   ├── services/
+│   │   ├── hf_downloader.py        # HuggingFace model downloader
+│   │   ├── model_loader.py         # Model loading service
+│   │   ├── pipeline.py             # SD-XS generation pipeline
+│   │   └── refiner.py              # Image refinement service (NEW)
+│   ├── data/
+│   │   └── images/
+│   │       ├── *.png               # Generated images
+│   │       └── refined/            # Refined images (NEW)
+│   └── models/                     # Downloaded models cache
+├── frontend/
+│   └── src/
+│       ├── App.js                  # Main React component
+│       └── components/ui/          # shadcn/ui components
+└── README.md
+```
+
 ## Notes
 
-- All inference is local - no cloud API calls except initial HuggingFace download
+- All inference is local - no cloud API calls except initial HuggingFace downloads
 - Generated images are saved permanently in `./data/images/`
-- Models are cached in `./models/` directory
+- Refined images are saved separately in `./data/images/refined/`
+- Models are cached in `./models/` directory for reuse
+- SDXS refiner uses the same model as generation (memory efficient)
+- Small SD V0 refiner requires separate download but offers alternative results
+
+## Tips for Best Results
+
+### Generation
+- Use descriptive prompts: "a serene mountain landscape at sunset with purple clouds"
+- Keep prompts focused and specific
+- Default 8 steps work well for SD-XS models
+
+### Refinement
+- Use refinement prompts to describe changes, not recreate the entire scene
+- Examples:
+  - ✅ "make colors more vibrant"
+  - ✅ "add dramatic lighting"
+  - ✅ "enhance details and sharpness"
+  - ❌ "a completely different scene" (better to generate new)
+- Adjust strength parameter:
+  - 0.5-0.7: Subtle refinements
+  - 0.7-0.8: Moderate changes (default: 0.75)
+  - 0.8-1.0: Dramatic transformations
+- Try both SDXS and Small SD V0 refiners for different results
