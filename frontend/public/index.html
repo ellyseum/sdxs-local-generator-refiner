@@ -51,6 +51,23 @@
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
+        <script>
+            // Suppress ResizeObserver errors globally (before React loads)
+            (function() {
+                const resizeObserverErrRe = /ResizeObserver loop (completed with undelivered notifications|limit exceeded)/;
+                const originalError = window.onerror;
+                
+                window.onerror = function(message, source, lineno, colno, error) {
+                    if (typeof message === 'string' && resizeObserverErrRe.test(message)) {
+                        return true; // Suppress the error
+                    }
+                    if (originalError) {
+                        return originalError(message, source, lineno, colno, error);
+                    }
+                    return false;
+                };
+            })();
+        </script>
         <div id="root"></div>
         <!--
       This HTML file is a template.
