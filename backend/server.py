@@ -13,6 +13,7 @@ import uuid
 from services.hf_downloader import HFDownloader
 from services.model_loader import ModelLoader
 from services.pipeline import SDXSPipeline
+from services.refiner import RefinerService
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -20,8 +21,10 @@ load_dotenv(ROOT_DIR / '.env')
 # Create directories
 MODELS_DIR = ROOT_DIR / 'models'
 IMAGES_DIR = ROOT_DIR / 'data' / 'images'
+REFINED_IMAGES_DIR = ROOT_DIR / 'data' / 'images' / 'refined'
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+REFINED_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 
 # Create the main app
 app = FastAPI()
@@ -31,6 +34,7 @@ api_router = APIRouter(prefix="/api")
 hf_downloader = HFDownloader(MODELS_DIR)
 model_loader = ModelLoader()
 sdxs_pipeline = SDXSPipeline(model_loader, IMAGES_DIR)
+refiner_service = RefinerService(MODELS_DIR, IMAGES_DIR, REFINED_IMAGES_DIR)
 
 # Models
 class ModelPrepareRequest(BaseModel):
