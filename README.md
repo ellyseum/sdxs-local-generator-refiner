@@ -141,14 +141,26 @@ Serves a refined image file.
 ### Generation Parameters
 
 - **size**: Image dimensions (default: `512x512`)
-- **steps**: Number of inference steps (default: `8`)
-- **guidance**: Guidance scale (default: `4.0`)
+- **steps**: Number of inference steps (default: `8` for generation)
+- **guidance**: Guidance scale (default: `4.0` for generation)
 - **seed**: Random seed for reproducibility (optional)
+
+### Refinement Parameters (NEW)
+
+- **strength**: How much to transform the image (default: `0.75`, range: 0.0-1.0)
+  - Lower values = more faithful to original
+  - Higher values = more creative changes
+- **steps**: Number of refinement steps (default: `20`)
+- **guidance**: Guidance scale for refinement (default: `7.5`)
 
 ### Performance
 
-- **CPU Mode**: Works but slower (~30-60s per image)
-- **GPU Mode**: Much faster (~2-5s per image) if CUDA is available
+- **CPU Mode**: Works but slower
+  - Generation: ~30-60s per image
+  - Refinement: ~60-90s per image
+- **GPU Mode**: Much faster if CUDA is available
+  - Generation: ~2-5s per image
+  - Refinement: ~5-10s per image
 
 The app automatically detects and uses GPU if available.
 
