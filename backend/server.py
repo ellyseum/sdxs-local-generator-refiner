@@ -57,6 +57,29 @@ class GenerateResponse(BaseModel):
     imagePath: str
     filename: str
 
+class RefinerPrepareRequest(BaseModel):
+    modelCardUrl: str
+    modelType: str  # "small-sd-v0"
+
+class RefinerPrepareResponse(BaseModel):
+    ok: bool
+    modelType: str
+    message: str
+
+class RefineRequest(BaseModel):
+    originalImageFilename: str
+    refinementPrompt: str
+    modelType: str  # "sdxs" or "small-sd-v0"
+    strength: Optional[float] = 0.75
+    steps: Optional[int] = 20
+    guidance: Optional[float] = 7.5
+    seed: Optional[int] = None
+
+class RefineResponse(BaseModel):
+    ok: bool
+    refinedImagePath: str
+    filename: str
+
 # Routes
 @api_router.get("/")
 async def root():
