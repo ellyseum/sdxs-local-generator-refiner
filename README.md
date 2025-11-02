@@ -19,6 +19,126 @@ A powerful web application for generating and refining images locally using Stab
 - **Inference**: PyTorch with diffusers library
 - **Storage**: Local file system
 
+## Installation & Setup
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Python 3.9+** ([Download](https://www.python.org/downloads/))
+- **Node.js 16+** and **npm/yarn** ([Download](https://nodejs.org/))
+- **Git** ([Download](https://git-scm.com/downloads))
+- **Optional but recommended:** CUDA-compatible GPU with drivers for faster inference
+
+### Step 1: Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd sdxs-generator-refiner
+```
+
+### Step 2: Backend Setup
+
+#### Install Python Dependencies
+
+```bash
+cd backend
+
+# Create a virtual environment (recommended)
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+#### Backend Dependencies Include:
+- `fastapi` - Web framework
+- `uvicorn` - ASGI server
+- `torch` - PyTorch for model inference
+- `diffusers` - HuggingFace diffusers library
+- `transformers` - Model components
+- `huggingface-hub` - Model downloading
+- `Pillow` - Image processing
+
+#### Create Environment File (Optional)
+
+Create a `.env` file in the `backend` directory if you need custom configuration:
+
+```bash
+# backend/.env
+CORS_ORIGINS=http://localhost:3000
+```
+
+### Step 3: Frontend Setup
+
+```bash
+cd ../frontend
+
+# Install dependencies
+npm install
+# or with yarn:
+yarn install
+```
+
+#### Frontend Dependencies Include:
+- `react` - UI framework
+- `axios` - HTTP client
+- `tailwindcss` - Styling
+- `shadcn/ui` - UI components
+
+#### Create Environment File
+
+Create a `.env` file in the `frontend` directory:
+
+```bash
+# frontend/.env
+REACT_APP_BACKEND_URL=http://localhost:8001
+```
+
+### Step 4: Run the Application
+
+You'll need two terminal windows/tabs:
+
+#### Terminal 1: Start Backend
+
+```bash
+cd backend
+# Activate virtual environment if not already activated
+source venv/bin/activate  # or venv\Scripts\activate on Windows
+
+# Run the server
+uvicorn server:app --reload --host 0.0.0.0 --port 8001
+```
+
+Backend will be available at `http://localhost:8001`
+
+#### Terminal 2: Start Frontend
+
+```bash
+cd frontend
+
+# Start development server
+npm start
+# or with yarn:
+yarn start
+```
+
+Frontend will be available at `http://localhost:3000`
+
+### Step 5: First Use
+
+1. Open your browser and navigate to `http://localhost:3000`
+2. Enter the SD-XS model URL: `https://huggingface.co/IDKiro/sdxs-512-0.9`
+3. Click "Fetch & Load Model" (first download takes 1-2 minutes)
+4. Enter a prompt and click "Generate"
+5. Once image is generated, try the refiner feature below!
+
 ## How It Works
 
 ### 1. Model Loading
