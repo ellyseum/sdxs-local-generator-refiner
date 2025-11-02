@@ -83,7 +83,7 @@ class RefineResponse(BaseModel):
 # Routes
 @api_router.get("/")
 async def root():
-    return {"message": "SD-XS Local Image Generation API"}
+    return {"message": "SDXS Generator & Refiner - Local Image Generation and Refinement API"}
 
 @api_router.post("/model/prepare", response_model=ModelPrepareResponse)
 async def prepare_model(request: ModelPrepareRequest):
