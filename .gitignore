@@ -85,3 +85,7 @@ backend/models/IDKiro_sdxs-512-0.9/.cache/huggingface/download/unet/4SfAgk9U607e
 # Environment files
 *.env
 *.env.*
+-e 
+# Environment files
+*.env
+*.env.*
