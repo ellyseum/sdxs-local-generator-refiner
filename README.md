@@ -29,6 +29,7 @@ When you click "Fetch & Load Model":
 2. Downloads the model files using `huggingface_hub.snapshot_download()`
 3. Loads the model into memory using the `diffusers` library
 4. Caches the pipeline for fast subsequent generations
+5. **Automatically links to refiner service** for SDXS refinement
 
 ### 2. Image Generation
 
@@ -38,6 +39,27 @@ When you click "Generate":
 2. Runs the SD-XS diffusion pipeline (default: 8 steps, 512x512)
 3. Saves the generated PNG to `./data/images/`
 4. Displays the image in the UI
+5. **Reveals the refiner section** below the generated image
+
+### 3. Image Refinement (NEW)
+
+After image generation, you can refine your images:
+
+1. **Select refiner model:**
+   - **SDXS (Already Loaded)** - Uses the existing SD-XS model (instant, no download)
+   - **Small Stable Diffusion V0** - Lightweight 0.76B parameter model (requires download)
+
+2. **For Small SD V0:** Click "Fetch & Load Refiner Model" (one-time setup)
+
+3. **Enter refinement prompt:**
+   - Describe modifications: "make it more vibrant and colorful"
+   - Add details: "add dramatic lighting"
+   - Change style: "make it look like an oil painting"
+
+4. **Click "Refine Image"**:
+   - Runs img2img diffusion (strength=0.75, 20 steps)
+   - Saves refined image to `./data/images/refined/`
+   - Displays the refined result below
 
 ## Supported Models
 
