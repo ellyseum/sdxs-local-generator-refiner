@@ -56,7 +56,7 @@ function App() {
     }
 
     setIsGenerating(true);
-    setStatusMessage('Generating image...');
+    setStatusMessage('Generating image... (this may take 30-60 seconds)');
     
     try {
       const response = await axios.post(`${API}/generate`, {
@@ -64,6 +64,8 @@ function App() {
         size: '512x512',
         steps: 8,
         guidance: 4.0
+      }, {
+        timeout: 120000 // 2 minute timeout
       });
 
       if (response.data.ok) {
