@@ -180,8 +180,8 @@ function App() {
     <div className="app-container">
       <div className="content-wrapper">
         <header className="app-header">
-          <h1 className="app-title">SD-XS Local Generator</h1>
-          <p className="app-subtitle">Generate images locally using Stable Diffusion XS</p>
+          <h1 className="app-title">SDXS Generator & Refiner</h1>
+          <p className="app-subtitle">Generate and refine images locally using Stable Diffusion XS</p>
         </header>
 
         <div className="cards-container">
