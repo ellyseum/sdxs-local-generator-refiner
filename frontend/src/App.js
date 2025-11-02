@@ -69,6 +69,7 @@ function App() {
 
     setIsGenerating(true);
     setStatusMessage('Generating image... (this may take 30-60 seconds)');
+    setRefinedImage(null); // Reset refined image on new generation
     
     try {
       const response = await axios.post(`${API}/generate`, {
@@ -83,6 +84,7 @@ function App() {
       if (response.data.ok) {
         const imageUrl = `${BACKEND_URL}${response.data.imagePath}`;
         setGeneratedImage(imageUrl);
+        setGeneratedImageFilename(response.data.filename);
         setStatusMessage(`✓ Image generated: ${response.data.filename}`);
         toast.success('Image generated successfully!');
       }
