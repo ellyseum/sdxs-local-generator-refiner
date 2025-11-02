@@ -311,11 +311,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Image refinement (img2img)"
-    - "Refiner service - SDXS img2img support"
-    - "Refiner service - Small SD V0 loader"
-    - "Refiner section UI - Model selection dropdown"
-    - "Refined image display"
+    - "Frontend testing needed"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
