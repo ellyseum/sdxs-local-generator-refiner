@@ -128,3 +128,10 @@ input:focus {
   border-top: 2px dashed #e5e7eb;
 }
 
+/* Select dropdown styling - prevent resize observer issues */
+[data-radix-select-viewport] {
+  overflow-y: auto !important;
+  max-height: 300px !important;
+}
+
+
