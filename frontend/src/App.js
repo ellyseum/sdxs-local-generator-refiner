@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '@/App.css';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,24 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 function App() {
+  // Suppress ResizeObserver errors at component level
+  useEffect(() => {
+    const resizeObserverErrRe = /ResizeObserver loop (completed with undelivered notifications|limit exceeded)/;
+    
+    const errorHandler = (event) => {
+      if (event.message && resizeObserverErrRe.test(event.message)) {
+        event.stopImmediatePropagation();
+        event.preventDefault();
+      }
+    };
+    
+    window.addEventListener('error', errorHandler);
+    
+    return () => {
+      window.removeEventListener('error', errorHandler);
+    };
+  }, []);
+
   const [modelUrl, setModelUrl] = useState('https://huggingface.co/IDKiro/sdxs-512-0.9');
   const [prompt, setPrompt] = useState('');
   const [generatedImage, setGeneratedImage] = useState(null);
