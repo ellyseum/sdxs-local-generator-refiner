@@ -1,1 +1,79 @@
-# Here are your Instructions
+# SD-XS Local Image Generator
+
+A minimal web application for generating images locally using Stable Diffusion XS models from HuggingFace.
+
+## Features
+
+- 🚀 Download and load SD-XS models directly from HuggingFace
+- 🎨 Generate images locally using native TensorFlow/PyTorch
+- 💾 Save generated images to local storage
+- 🖥️ Clean, minimal web interface
+- ⚡ Fast inference with optimized settings
+
+## Tech Stack
+
+- **Backend**: FastAPI (Python) with PyTorch + Diffusers
+- **Frontend**: React with Tailwind CSS + shadcn/ui components
+- **Inference**: PyTorch with diffusers library
+- **Storage**: Local file system
+
+## How It Works
+
+### 1. Model Loading
+
+When you click "Fetch & Load Model":
+
+1. The app parses the HuggingFace model URL to extract the repo ID
+2. Downloads the model files using `huggingface_hub.snapshot_download()`
+3. Loads the model into memory using the `diffusers` library
+4. Caches the pipeline for fast subsequent generations
+
+### 2. Image Generation
+
+When you click "Generate":
+
+1. Takes your text prompt
+2. Runs the SD-XS diffusion pipeline (default: 8 steps, 512x512)
+3. Saves the generated PNG to `./data/images/`
+4. Displays the image in the UI
+
+## Supported Models
+
+The app works with SD-XS (Stable Diffusion XS) models that are compatible with the `diffusers` library.
+
+### Tested Models
+
+- **IDKiro/sdxs-512-0.9** - SD-XS 512x512 model (recommended for testing)
+
+## API Endpoints
+
+### `POST /api/model/prepare`
+Loads a model from HuggingFace.
+
+### `POST /api/generate`
+Generates an image from a text prompt.
+
+### `GET /api/images/{filename}`
+Serves a generated image file.
+
+## Configuration
+
+### Generation Parameters
+
+- **size**: Image dimensions (default: `512x512`)
+- **steps**: Number of inference steps (default: `8`)
+- **guidance**: Guidance scale (default: `4.0`)
+- **seed**: Random seed for reproducibility (optional)
+
+### Performance
+
+- **CPU Mode**: Works but slower (~30-60s per image)
+- **GPU Mode**: Much faster (~2-5s per image) if CUDA is available
+
+The app automatically detects and uses GPU if available.
+
+## Notes
+
+- All inference is local - no cloud API calls except initial HuggingFace download
+- Generated images are saved permanently in `./data/images/`
+- Models are cached in `./models/` directory
