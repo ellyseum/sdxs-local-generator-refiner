@@ -101,3 +101,237 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  Build a minimal local web application for SD-XS image generation with image refinement capability.
+  Users can:
+  1. Input a Hugging Face model card URL for SD-XS
+  2. Generate images from text prompts
+  3. Refine generated images using:
+     - SDXS (already loaded, default)
+     - Small Stable Diffusion V0 (load on demand)
+  All inference must be local with no cloud calls except for initial model download.
+
+backend:
+  - task: "Model download and loading (SD-XS)"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py, backend/services/hf_downloader.py, backend/services/model_loader.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Existing implementation - POST /api/model/prepare endpoint"
+
+  - task: "Image generation (SD-XS)"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py, backend/services/pipeline.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Existing implementation - POST /api/generate endpoint"
+
+  - task: "Image serving (generated images)"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Existing implementation - GET /api/images/{filename}"
+
+  - task: "Refiner service - SDXS img2img support"
+    implemented: true
+    working: "NA"
+    file: "backend/services/refiner.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New implementation - RefinerService that converts SDXS text2img to img2img pipeline"
+
+  - task: "Refiner service - Small SD V0 loader"
+    implemented: true
+    working: "NA"
+    file: "backend/services/refiner.py, backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New implementation - POST /api/refiner/prepare endpoint for Small SD V0"
+
+  - task: "Image refinement (img2img)"
+    implemented: true
+    working: "NA"
+    file: "backend/services/refiner.py, backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New implementation - POST /api/refiner/refine endpoint with strength=0.75, steps=20"
+
+  - task: "Refined image serving"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New implementation - GET /api/images/refined/{filename}"
+
+frontend:
+  - task: "Model setup UI"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Existing implementation - Model URL input and fetch button"
+
+  - task: "Image generation UI"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Existing implementation - Prompt input and generate button"
+
+  - task: "Generated image display"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Existing implementation - Shows generated image"
+
+  - task: "Refiner section UI - Model selection dropdown"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New implementation - Dropdown with SDXS and Small SD V0 options, appears after image generation"
+
+  - task: "Refiner section UI - Load refiner button"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New implementation - Conditional button (hidden for SDXS, shown for Small SD V0)"
+
+  - task: "Refiner section UI - Refinement prompt and refine button"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New implementation - Enabled after refiner is loaded"
+
+  - task: "Refined image display"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New implementation - Shows refined image below refiner controls"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Image refinement (img2img)"
+    - "Refiner service - SDXS img2img support"
+    - "Refiner service - Small SD V0 loader"
+    - "Refiner section UI - Model selection dropdown"
+    - "Refined image display"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Implemented image refinement feature with the following:
+      
+      BACKEND:
+      - Created RefinerService (services/refiner.py) that handles:
+        * SDXS img2img by converting existing text2img pipeline
+        * Small SD V0 img2img via StableDiffusionImg2ImgPipeline
+      - Added 3 new endpoints:
+        * POST /api/refiner/prepare - Load refiner models (Small SD V0)
+        * POST /api/refiner/refine - Refine images with img2img
+        * GET /api/images/refined/{filename} - Serve refined images
+      - Linked SDXS pipeline to refiner service automatically on model load
+      - Refined images saved to /backend/data/images/refined/
+      
+      FRONTEND:
+      - Added refiner section that appears after image generation
+      - Dropdown with 2 options: "SDXS (Already Loaded)" and "Small Stable Diffusion V0"
+      - Conditional "Fetch & Load Refiner Model" button (only for Small SD V0)
+      - Refinement prompt input and "Refine" button
+      - Displays refined image below as "Refined Image"
+      - Added CSS styling for refiner section
+      
+      TESTING NEEDED:
+      1. Verify SDXS refinement works (should work without additional loading)
+      2. Verify Small SD V0 can be loaded and used for refinement
+      3. Check img2img parameters (strength=0.75, steps=20, guidance=7.5)
+      4. Verify refined images are displayed correctly
+      5. Test error handling for missing models or invalid inputs
+      
+      IMPORTANT NOTES:
+      - Both SDXS and Small SD V0 models are large (1-2GB each)
+      - First-time model download will take time
+      - Refinement process may take 30-60 seconds
+      - Frontend has 2-minute timeout for all API calls
