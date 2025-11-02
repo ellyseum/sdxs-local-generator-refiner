@@ -161,6 +161,158 @@ class SDXSAPITester:
         )
         return success
 
+    def test_refiner_prepare_sdxs(self):
+        """Test SDXS refiner preparation (should use existing model)"""
+        success, response = self.run_test(
+            "Refiner Prepare - SDXS",
+            "POST",
+            "refiner/prepare",
+            200,
+            data={
+                "modelCardUrl": "https://huggingface.co/IDKiro/sdxs-512-0.9",
+                "modelType": "sdxs"
+            }
+        )
+        
+        if success and response.get('ok'):
+            print(f"   SDXS refiner ready: {response.get('message')}")
+            return True
+        return False
+
+    def test_refiner_prepare_small_sd_v0(self):
+        """Test Small SD V0 refiner preparation"""
+        print("⚠️  This test will download Small SD V0 model (~2GB) and may take several minutes...")
+        success, response = self.run_test(
+            "Refiner Prepare - Small SD V0",
+            "POST",
+            "refiner/prepare",
+            200,
+            data={
+                "modelCardUrl": "https://huggingface.co/OFA-Sys/small-stable-diffusion-v0",
+                "modelType": "small-sd-v0"
+            },
+            timeout=600  # 10 minutes timeout for model download
+        )
+        
+        if success and response.get('ok'):
+            print(f"   Small SD V0 refiner loaded: {response.get('message')}")
+            return True
+        return False
+
+    def test_refine_image_sdxs(self, original_filename):
+        """Test image refinement with SDXS"""
+        if not original_filename:
+            self.log_test("Refine Image - SDXS", False, "No original image filename provided")
+            return False, None
+            
+        success, response = self.run_test(
+            "Refine Image - SDXS",
+            "POST",
+            "refiner/refine",
+            200,
+            data={
+                "originalImageFilename": original_filename,
+                "refinementPrompt": "make it more vibrant and colorful",
+                "modelType": "sdxs",
+                "strength": 0.75,
+                "steps": 20,
+                "guidance": 7.5
+            },
+            timeout=120  # 2 minutes for refinement
+        )
+        
+        if success and response.get('ok'):
+            print(f"   Refined image: {response.get('filename')}")
+            print(f"   Refined path: {response.get('refinedImagePath')}")
+            return True, response.get('refinedImagePath')
+        return False, None
+
+    def test_refine_image_small_sd_v0(self, original_filename):
+        """Test image refinement with Small SD V0"""
+        if not original_filename:
+            self.log_test("Refine Image - Small SD V0", False, "No original image filename provided")
+            return False, None
+            
+        success, response = self.run_test(
+            "Refine Image - Small SD V0",
+            "POST",
+            "refiner/refine",
+            200,
+            data={
+                "originalImageFilename": original_filename,
+                "refinementPrompt": "make it more vibrant and colorful",
+                "modelType": "small-sd-v0",
+                "strength": 0.75,
+                "steps": 20,
+                "guidance": 7.5
+            },
+            timeout=120  # 2 minutes for refinement
+        )
+        
+        if success and response.get('ok'):
+            print(f"   Refined image: {response.get('filename')}")
+            print(f"   Refined path: {response.get('refinedImagePath')}")
+            return True, response.get('refinedImagePath')
+        return False, None
+
+    def test_get_refined_image(self, refined_image_path):
+        """Test retrieving refined image"""
+        if not refined_image_path:
+            self.log_test("Get Refined Image", False, "No refined image path provided")
+            return False
+            
+        # Extract filename from path
+        filename = refined_image_path.split('/')[-1]
+        
+        success, response = self.run_test(
+            "Get Refined Image",
+            "GET",
+            f"images/refined/{filename}",
+            200,
+            timeout=30
+        )
+        return success
+
+    def test_get_nonexistent_refined_image(self):
+        """Test retrieving non-existent refined image"""
+        success, response = self.run_test(
+            "Get Non-existent Refined Image",
+            "GET",
+            "images/refined/nonexistent.png",
+            404
+        )
+        return success
+
+    def test_refine_without_model(self):
+        """Test refinement without loading refiner model first"""
+        success, response = self.run_test(
+            "Refine Image - No Refiner Loaded",
+            "POST",
+            "refiner/refine",
+            400,  # Should fail without refiner
+            data={
+                "originalImageFilename": "test.png",
+                "refinementPrompt": "test prompt",
+                "modelType": "small-sd-v0"
+            }
+        )
+        return success
+
+    def test_refine_nonexistent_image(self):
+        """Test refinement with non-existent original image"""
+        success, response = self.run_test(
+            "Refine Image - Non-existent Original",
+            "POST",
+            "refiner/refine",
+            500,  # Should fail with non-existent image
+            data={
+                "originalImageFilename": "nonexistent.png",
+                "refinementPrompt": "test prompt",
+                "modelType": "sdxs"
+            }
+        )
+        return success
+
 def main():
     print("🚀 Starting SD-XS API Tests")
     print("=" * 50)
