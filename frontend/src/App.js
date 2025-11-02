@@ -98,6 +98,84 @@ function App() {
     }
   };
 
+  const handleLoadRefiner = async () => {
+    if (selectedRefiner === 'sdxs') {
+      // SDXS is already loaded, just confirm
+      setRefinerLoaded(prev => ({ ...prev, sdxs: true }));
+      setRefinerStatusMessage('✓ SDXS refiner ready (using existing model)');
+      toast.success('SDXS refiner ready!');
+      return;
+    }
+
+    if (selectedRefiner === 'small-sd-v0') {
+      setIsLoadingRefiner(true);
+      setRefinerStatusMessage('Loading Small Stable Diffusion V0...');
+      
+      try {
+        const response = await axios.post(`${API}/refiner/prepare`, {
+          modelCardUrl: 'https://huggingface.co/OFA-Sys/small-stable-diffusion-v0',
+          modelType: 'small-sd-v0'
+        });
+
+        if (response.data.ok) {
+          setRefinerLoaded(prev => ({ ...prev, 'small-sd-v0': true }));
+          setRefinerStatusMessage(`✓ ${response.data.message}`);
+          toast.success('Small SD V0 refiner loaded!');
+        }
+      } catch (error) {
+        console.error('Error loading refiner:', error);
+        const errorMsg = error.response?.data?.detail || error.message;
+        setRefinerStatusMessage(`✗ Error: ${errorMsg}`);
+        toast.error(`Failed to load refiner: ${errorMsg}`);
+      } finally {
+        setIsLoadingRefiner(false);
+      }
+    }
+  };
+
+  const handleRefine = async () => {
+    if (!refinementPrompt.trim()) {
+      toast.error('Please enter a refinement prompt');
+      return;
+    }
+
+    if (!generatedImageFilename) {
+      toast.error('No generated image to refine');
+      return;
+    }
+
+    setIsRefining(true);
+    setRefinerStatusMessage('Refining image... (this may take 30-60 seconds)');
+    
+    try {
+      const response = await axios.post(`${API}/refiner/refine`, {
+        originalImageFilename: generatedImageFilename,
+        refinementPrompt: refinementPrompt,
+        modelType: selectedRefiner,
+        strength: 0.75,
+        steps: 20,
+        guidance: 7.5
+      }, {
+        timeout: 120000 // 2 minute timeout
+      });
+
+      if (response.data.ok) {
+        const refinedImageUrl = `${BACKEND_URL}${response.data.refinedImagePath}`;
+        setRefinedImage(refinedImageUrl);
+        setRefinerStatusMessage(`✓ Image refined: ${response.data.filename}`);
+        toast.success('Image refined successfully!');
+      }
+    } catch (error) {
+      console.error('Error refining image:', error);
+      const errorMsg = error.response?.data?.detail || error.message;
+      setRefinerStatusMessage(`✗ Error: ${errorMsg}`);
+      toast.error(`Failed to refine image: ${errorMsg}`);
+    } finally {
+      setIsRefining(false);
+    }
+  };
+
+
   return (
     <div className="app-container">
       <div className="content-wrapper">
