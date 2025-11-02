@@ -76,14 +76,65 @@ The app works with SD-XS (Stable Diffusion XS) models and lightweight Stable Dif
 
 ## API Endpoints
 
-### `POST /api/model/prepare`
-Loads a model from HuggingFace.
+### Generation Endpoints
 
-### `POST /api/generate`
+#### `POST /api/model/prepare`
+Loads a generation model from HuggingFace.
+
+**Request:**
+```json
+{
+  "modelCardUrl": "https://huggingface.co/IDKiro/sdxs-512-0.9"
+}
+```
+
+#### `POST /api/generate`
 Generates an image from a text prompt.
 
-### `GET /api/images/{filename}`
+**Request:**
+```json
+{
+  "prompt": "a beautiful sunset over mountains",
+  "size": "512x512",
+  "steps": 8,
+  "guidance": 4.0,
+  "seed": null
+}
+```
+
+#### `GET /api/images/{filename}`
 Serves a generated image file.
+
+### Refiner Endpoints (NEW)
+
+#### `POST /api/refiner/prepare`
+Loads a refiner model (Small SD V0 only, SDXS auto-loaded).
+
+**Request:**
+```json
+{
+  "modelCardUrl": "https://huggingface.co/OFA-Sys/small-stable-diffusion-v0",
+  "modelType": "small-sd-v0"
+}
+```
+
+#### `POST /api/refiner/refine`
+Refines an image using img2img pipeline.
+
+**Request:**
+```json
+{
+  "originalImageFilename": "image.png",
+  "refinementPrompt": "make it more vibrant",
+  "modelType": "sdxs",
+  "strength": 0.75,
+  "steps": 20,
+  "guidance": 7.5
+}
+```
+
+#### `GET /api/images/refined/{filename}`
+Serves a refined image file.
 
 ## Configuration
 
