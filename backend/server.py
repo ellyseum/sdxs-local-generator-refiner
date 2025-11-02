@@ -97,6 +97,9 @@ async def prepare_model(request: ModelPrepareRequest):
         # Load model into memory
         await model_loader.load_model(repo_id, model_path)
         
+        # Link to refiner service for SDXS refinement
+        refiner_service.set_sdxs_pipeline(model_loader.get_pipeline())
+        
         return ModelPrepareResponse(
             ok=True,
             repoId=repo_id,
