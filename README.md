@@ -63,11 +63,16 @@ After image generation, you can refine your images:
 
 ## Supported Models
 
-The app works with SD-XS (Stable Diffusion XS) models that are compatible with the `diffusers` library.
+The app works with SD-XS (Stable Diffusion XS) models and lightweight Stable Diffusion models compatible with the `diffusers` library.
 
-### Tested Models
+### Generation Models (SD-XS)
 
-- **IDKiro/sdxs-512-0.9** - SD-XS 512x512 model (recommended for testing)
+- **IDKiro/sdxs-512-0.9** - SD-XS 512x512 model (recommended, ~1-2GB)
+
+### Refiner Models
+
+- **SDXS (Built-in)** - Uses the loaded SD-XS model for refinement (no extra download)
+- **OFA-Sys/small-stable-diffusion-v0** - Compact 0.76B parameter model (~2GB download)
 
 ## API Endpoints
 
