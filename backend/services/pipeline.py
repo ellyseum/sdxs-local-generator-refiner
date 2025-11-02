@@ -38,16 +38,24 @@ class SDXSPipeline:
             
             logger.info(f"Generating image: {width}x{height}, steps={steps}, guidance={guidance}")
             
+            # Prepare generation parameters
+            gen_params = {
+                "prompt": prompt,
+                "num_inference_steps": steps,
+                "width": width,
+                "height": height,
+                "generator": generator
+            }
+            
+            # Add guidance scale only if supported
+            try:
+                gen_params["guidance_scale"] = guidance
+            except:
+                logger.warning("Guidance scale not supported for this model")
+            
             # Generate image
             with torch.inference_mode():
-                result = pipeline(
-                    prompt=prompt,
-                    num_inference_steps=steps,
-                    guidance_scale=guidance,
-                    width=width,
-                    height=height,
-                    generator=generator
-                )
+                result = pipeline(**gen_params)
             
             image = result.images[0]
             
